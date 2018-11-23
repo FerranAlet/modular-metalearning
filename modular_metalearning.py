@@ -20,9 +20,6 @@ from dataset import MetaHDFDataset, MetaNpySelfRegressDataset
 from tqdm import tqdm as Tqdm
 import os
 import shutil
-from gnn_composer import GNN_Structure
-from hgnn_composer import HGNN_Structure
-from distributedDL_composer import DistributedDL_Structure
 from sum_composer import Sum_Structure
 from functioncomposition_composer import FunctionComposition_Structure
 
@@ -36,13 +33,7 @@ class BounceGrad(object):
     # Parse parameters from args #
     ##############################
     self.composer = args.composer
-    if self.composer.startswith('gnn'):
-      self.S = GNN_Structure(args=args)
-    elif self.composer.startswith('hgnn'):
-      self.S = HGNN_Structure(args=args)
-    elif self.composer == 'distributedDL':
-      self.S = DistributedDL_Structure(args=args)
-    elif self.composer.startswith('sum'):
+    if self.composer.startswith('sum'):
       [self.composer, args.structure_size] = self.composer.split('-')
       args.structure_size=int(args.structure_size)
       self.S = Sum_Structure(args=args)
@@ -665,6 +656,8 @@ class BounceGrad(object):
             type(getattr(self, attr)[list(getattr(self,attr).keys())[0]]) in
             [type(1), type(1.0), type('a'), type(None)])
         and not callable(getattr(self, attr)) and not attr.startswith('__'))}
+
+    if not os.path.exists('metrics/'): os.makedirs('metrics/')
     with open('metrics/'+self.plot_name[:-1]+'.json', 'w') as outfile:
       json.dump(self.METRICS, outfile)
     with open(self.plot_name+'metrics.json', 'w') as outfile:
