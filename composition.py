@@ -17,8 +17,8 @@ torch.device(nn_device)
 # create a (name)_composer.py with functions:                       #
 #                                                                   #
 # - forward_no_weights                                              #
-# - forward_with_weighs: NOT NEEDED IF YOU ONLY USE BOUNCE-GRAD     #
-#     this is as with weights but manually forward looping          #
+# - forward_with_weighs: NOT NEEDED IF YOU DON'T USE MAML           #
+#     same as with weights but manually forward looping             #
 #     through the modules                                           #
 # We suggest looking at currently coded grammars as references.     #
 # - sum_composer is the simplest                                    #
@@ -30,11 +30,17 @@ class Composer(nn.Module):
   '''
   Composes multiple modules into a single net.
   '''
-  def __init__(self, composer, module_list, loss_fn=None, structure={}, instructions={}):
+  def __init__(self, composer, module_list, loss_fn=None, structure={},
+          instructions={}):
+    '''
+    composer: string describing the composer type
+    structure: specifies how to compose which modules
+    loss_fn: loss function
+    instructions: can be left blank, customizable non-computation parameters
+    '''
     super(Composer, self).__init__()
     self.module_list = module_list
     assert type(module_list) == type(torch.nn.ModuleList())
-    self.composer = composer
     self.num_modules = len(self.module_list)
     self.composer = composer
     self.loss_fn = loss_fn

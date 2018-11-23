@@ -28,7 +28,7 @@ class Structure():
     self.tot_modules = sum(self.num_modules)
 
     self.usage_normalization = 1e-9
-    self.has_global_variable = False #default
+    self.has_global_variable = False
 
 
   def initialize_structure(self):
@@ -135,19 +135,20 @@ class Structure():
 
   def default_initialize_structure(self):
     structure = {'modules':[]}
-    for i in range(self.num_types): #as many modules as types of modules
-      act_type = np.random.randint(self.num_types)
+    for i in range(self.structure_size):
+      act_type = np.random.randint(self.structure_size)
       act_mod = np.random.randint(self.num_modules[act_type])
       structure['modules'].append(self.Modules[act_type][act_mod])
     return structure
 
   def default_initialize_fixed_structure(self):
-    assert False, 'modules should be list of pointers to L'
+    #Position 'i' in the structure can only be filled by a node of type 'i'
+    assert self.num_types == self.structure_size
     structure = {'modules':[]}
     for i in range(self.num_types):
       act_type = i
       act_mod = np.random.randint(self.num_modules[act_type])
-      structure['modules'].append([act_type, act_mod])
+      structure['modules'].append(self.Modules[act_type][act_mod])
     return structure
 
   def default_propose_new_structure(self, new_structure):
@@ -157,8 +158,8 @@ class Structure():
     new_structure['modules'][pos] = self.Modules[act_type][act_mod]
 
   def default_propose_new_fixed_structure(self, new_structure):
-    assert False, 'modules should be list of pointers to L'
+    #Position 'i' in the structure can only be filled by a node of type 'i'
     pos = np.random.randint(len(new_structure['modules']))
     act_type = pos
     act_mod = np.random.randint(self.num_modules[act_type])
-    new_structure['modules'][pos] = [act_type, act_mod]
+    new_structure['modules'][pos] = self.Modules[act_type][act_mod]

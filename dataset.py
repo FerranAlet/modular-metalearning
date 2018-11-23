@@ -1,11 +1,13 @@
 """
 Creates the datasets.
-Right now 1 option:
-  - Parsing a HDF5 file.
+
+If you want to create your own way of creating datasets;
+subclass Dataset and MetaDataset
 """
 import copy
 import h5py
 import numpy as np
+import random
 
 #Default parameters
 SEED = 2
@@ -44,6 +46,7 @@ class MetaDataset(object):
     if RS is None: self.RS = np.random.RandomState(seed=SEED)
     elif type(RS) == type(1): self.RS = np.random.RandomState(seed=RS)
     else: self.RS = RS #RandomState
+    random.seed(SEED)
 
     #Parameters for each testcase
     self.train = train
@@ -109,8 +112,19 @@ class MetaDataset(object):
       assert dataset.TrainInput.shape[1] == inp_shape
       assert dataset.TestOutput.shape[1] == out_shape
     # Compute mean and std
-    ALL_IN = np.concatenate([dataset.TrainInput for dataset in self.MTRAIN] , 0)
-    ALL_OUT = np.concatenate([dataset.TrainOutput for dataset in self.MTRAIN],0)
+    ALL_IN = np.concatenate([dataset.ValInput for dataset in self.MVAL] , 0)
+    ALL_OUT = np.concatenate([dataset.ValOutput for dataset in self.MVAL],0)
+    self.input_mean = np.mean(ALL_IN, 0)
+    self.input_std = np.maximum(EPS, np.std(ALL_IN, 0))
+    self.output_mean = np.mean(ALL_OUT, 0)
+    self.output_std = np.maximum(EPS, np.std(ALL_OUT,0))
+    print('MVAL Input mean: ', self.input_mean)
+    print('MVAL Input std: ', self.input_std)
+    print('MVAL Output mean: ', self.output_mean)
+    print('MVAL Output std: ', self.output_std)
+
+    ALL_IN = np.concatenate([dataset.ValInput for dataset in self.MTRAIN] , 0)
+    ALL_OUT = np.concatenate([dataset.ValOutput for dataset in self.MTRAIN],0)
     self.input_mean = np.mean(ALL_IN, 0)
     self.input_std = np.maximum(EPS, np.std(ALL_IN, 0))
     self.output_mean = np.mean(ALL_OUT, 0)
@@ -228,9 +242,17 @@ class MetaHDFDataset(MetaDataset):
     NAMES = [name.replace('-IN','')
         for name in sorted(list(f.keys())) if 'IN' in name]
     print('Names = ', NAMES[:10])
+    print('Num datasets = ', len(NAMES))
 
     #DATA contains a list of 'object'=datasets
     self.mval_fraction, self.mtest_fraction = self.mval, self.mtest
+    if self.max_datasets < len(DATA):
+      #Subsample DATA randomly
+      subsampled_idx  = self.RS.choice(len(DATA), size=self.max_datasets,
+          replace=False)
+      DATA = [d for (i_d,d) in enumerate(DATA) if i_d in subsampled_idx]
+      NAMES = [d for (i_d,d) in enumerate(NAMES) if i_d in subsampled_idx]
+
     tot_datasets = min(DATA[0][0][()].shape[0] // self.limit_data,
         self.max_datasets//len(DATA))*len(DATA)
     self.mval = int(round(self.mval*tot_datasets))
@@ -244,8 +266,9 @@ class MetaHDFDataset(MetaDataset):
     self.MVAL = []
     self.MTEST = []
     num_datasets_hist = []
-    #TODO: randomize order of NAMES, DATA
-    for i_f, (name, data) in enumerate(zip(NAMES, DATA)):
+    shuffled_pairs = list(zip(NAMES, DATA))
+    random.shuffle(shuffled_pairs)
+    for (name, data) in shuffled_pairs:
       input_data = data[0][()]
       output_data = data[1][()]
       num_datasets = min(input_data.shape[0] // self.limit_data,
@@ -266,7 +289,7 @@ class MetaHDFDataset(MetaDataset):
         elif len(self.MVAL) < self.mval: list_to_append = self.MVAL
         elif len(self.MTEST) < self.mtest: list_to_append = self.MTEST
         else: assert False, 'something doesnt add up'
-      print(num_datasets)
+      # print(num_datasets)
       for k in range(num_datasets):
         list_to_append.append(NPDataset(
           input_data=input_data[k*self.limit_data:(k+1)*self.limit_data],
@@ -328,9 +351,6 @@ class MetaNpySelfRegressDataset(MetaDataset):
     self.MTRAIN = self.create_meta_dataset(MTrainArray, MTrainNames)
     self.MVAL = self.create_meta_dataset(MValArray, MValNames,
         hard_max_datasets=self.max_datasets//4)
-    # self.MVAL = self.create_meta_dataset(MTestArray, MTestNames)
-    #TODO: HACK
-    # self.MTEST = self.create_meta_dataset(MValArray, MValNames)
     self.MTEST = self.create_meta_dataset(MTestArray, MTestNames)
     self.mtrain = len(self.MTRAIN)
     self.mval = len(self.MVAL)
