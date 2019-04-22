@@ -146,7 +146,7 @@ if __name__ == '__main__':
       default = 1000, help='maximum number of elements per dataset')
   parser.add_argument('--meta_datasets', dest='meta_datasets', type=int,
       default = 1000, help='number of metadatasets for sines datasets')
-  parser.add_argument('--out_file', dest='out_file.hdf5',
+  parser.add_argument('--out_file', dest='out_file', default='out_file.hdf5',
       help='directory with bvh files')
   args = parser.parse_args()
   main(args)
