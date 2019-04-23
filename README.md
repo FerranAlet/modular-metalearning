@@ -6,6 +6,7 @@ The code has been refactored to make it easy to extend with your own variations.
 
 ## Prerequisites
 * [PyTorch](https://pytorch.org/get-started/locally/)
+* [tensorboardX](https://github.com/lanpa/tensorboardX) the equivalent to tensorboard for pytorch
 * (Optional) CUDA GPU support. If you don't have it, you can comment all lines with nn_device and cuda() references.
 
 ## I want to create my own composition; what should I do?
@@ -15,11 +16,11 @@ Subclass both [Composer](https://github.com/FerranAlet/modular-metalearning/blob
 
 The simplest example of how to do this is the [sum](https://github.com/FerranAlet/modular-metalearning/blob/master/sum_composer.py). We will shortly add a more complex Graph Neural Network composer.
 
-Finally, you should import your new file in [modular_metalearning](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_metalearning.py) and add it to the possible compositions at the very beginning of BounceGrad ``__init__``.
+Finally, you should import your new file in [modular_main](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_main.py) and add it to the possible compositions at towards end of the function.
 
 
 ## Example runs
-First you have to generate the datasets using  [create_functions_datasets](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_metalearning.py). For instance to create the functions dataset:
+First you have to generate the datasets using  [create_functions_datasets](https://github.com/FerranAlet/modular-metalearning/blob/master/create_functions_dataset.py). For instance to create the functions dataset:
 ```
 python create_functions_datasets.py --mode sum --not_alone --out_file sums.hdf5
 ```
@@ -29,14 +30,14 @@ python create_functions_datasets.py --mode sines --out_file sines.hdf5
 ```
 The file has a couple flags to customize how many elements per dataset and how many datasets to create.
 
-Then you run [modular_metalearning](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_metalearning.py).
+Then you run [modular_main](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_main.py), which relies on the class defined in the [modular_metalearning](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_metalearning.py) file.
 For example to run BounceGrad in the sums dataset:
 ```
-python modular_metalearning.py --type_modules affine-1-16-16-1,affine-1-16-1 --num_modules 10,10 --composer sum-2 --meta_lr 0.003 --plot_name BounceGrad --limit_data 80 --optimization_steps 3000 --split_by_file --meta_split 90,10,0 --data_split 20,80,0 --data_desc HDF5@sums.hdf5 --meta_batch_size 32
+python modular_main.py --type_modules affine-1-16-16-1,affine-1-16-1 --num_modules 10,10 --composer sum-2 --meta_lr 0.003 --plot_name BounceGrad --limit_data 80 --optimization_steps 3000 --split_by_file --meta_split 90,10,0 --data_split 20,80,0 --data_desc HDF5@sums.hdf5 --meta_batch_size 32
 ```
 or to run MAML in the sines dataset:
 ```
-python modular_metalearning.py --type_modules affine-1-64-64-1 --num_modules 1 --composer functionComposition-1 --meta_lr 0.001 --plot_name MAML --limit_data 80 --optimization_steps 5000 --split_by_file --meta_split 90,10,0 --data_split 20,80,0 --data_desc HDF5@sines.hdf5 --meta_batch_size 16 --max_datasets 300 --MAML --MAML_step_size 0.1
+python modular_main.py --type_modules affine-1-64-64-1 --num_modules 1 --composer functionComposition-1 --meta_lr 0.001 --plot_name MAML --limit_data 80 --optimization_steps 5000 --split_by_file --meta_split 90,10,0 --data_split 20,80,0 --data_desc HDF5@sines.hdf5 --meta_batch_size 16 --max_datasets 300 --MAML --MAML_step_size 0.1
 ```
 ## Algorithm options
 You can run either of the 4 algorithms described in the paper:
@@ -47,7 +48,7 @@ You can run either of the 4 algorithms described in the paper:
 
 The 4 algorithms come from two independent decisions: whether to have more than one module and whether to add MAML.
 
-All options are flags in [modular_metalearning](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_metalearning.py). To activate MAML use the flag ```--MAML``` and you also have access to customizing the step size and number of steps.
+All options are flags in [modular_main](https://github.com/FerranAlet/modular-metalearning/blob/master/modular_main.py). To activate MAML use the flag ```--MAML``` and you also have access to customizing the step size and number of steps.
 
 To not have modularity use ```--composer functionComposition-1```, since a [functionComposition](https://github.com/FerranAlet/modular-metalearning/blob/master/functioncomposition_composer.py) of depth 1 is just applying that one function.
 
@@ -61,7 +62,7 @@ Beware that adding modules makes the use of each module less frequent, and there
 
 ## Some works using this code
 * [Learning Quickly to Plan Quickly Using Modular Meta-Learning](https://arxiv.org/abs/1809.07878) Chitnis et al.
-* Modular meta-learning in Abstract Graph Networks for combinatorial generalization; Alet et al. ; to be presented in NIPS meta-learning workshop 2018
+* [Modular meta-learning in Abstract Graph Networks for combinatorial generalization](https://arxiv.org/pdf/1812.07768.pdf); Alet et al. ; NeurIPS meta-learning workshop 2018
 
 ## Questions? Suggestions?
 Please email me at alet(at)mit(dot)edu.

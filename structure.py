@@ -2,6 +2,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm as Tqdm
+from torch.nn import ParameterList
 
 class Structure():
   def __init__(self, args):
@@ -29,7 +30,7 @@ class Structure():
 
     self.usage_normalization = 1e-9
     self.has_global_variable = False
-
+    self.StructureParameters = ParameterList()
 
   def initialize_structure(self):
     '''
@@ -42,6 +43,13 @@ class Structure():
     Given a structure, new_structure, make a modification
     '''
     raise NotImplementedError
+
+  def update_structure(self, structure, step=None):
+    '''
+    Optional function updating some aspects of the structure
+    for instance to adapt to some parameters that changed by SGD
+    '''
+    return
 
   def update_Usage_counters(self, METRICS, T):
     '''
@@ -80,6 +88,12 @@ class Structure():
     '''
     return
 
+  def update_customized_stats(self, BG=None):
+    '''
+    Updates tables depending on the pertinent structure.
+    '''
+    return
+
   def plot_customized_usage_rate(self, directory=None):
     return
 
@@ -94,15 +108,15 @@ class Structure():
       plt.savefig(os.path.join(directory, 'usage-rate'))
       plt.clf()
 
-  def initialize_all_structures(self, T):
-    self.TrainStructures = [None for _ in T.MTRAIN]
+  def initialize_all_structures(self, T, mtrain_copies=1):
+    self.TrainStructures = [None for _ in range(mtrain_copies * T.mtrain)]
     self.ValStructures = [None for _ in T.MVAL]
     for i in Tqdm(range(len(self.TrainStructures))):
       self.TrainStructures[i] = self.initialize_structure()
       self.TrainStructures[i]['original_input_shape'] = (
-              T.MTRAIN[i].original_input_shape)
+              T.MTRAIN[i%T.mtrain].original_input_shape)
       self.TrainStructures[i]['original_output_shape'] = (
-              T.MTRAIN[i].original_output_shape)
+              T.MTRAIN[i%T.mtrain].original_output_shape)
     for i in range(len(self.ValStructures)):
       self.ValStructures[i] = self.initialize_structure()
       self.ValStructures[i]['original_input_shape'] = (
@@ -124,8 +138,8 @@ class Structure():
     for i_s, structure in enumerate(self.TrainStructures+self.ValStructures):
       for m in structure['modules']:
         self.Usage[i_s][m] += eps
-    names = (
-        [_.name for _ in T.MTRAIN] + [_.name for _ in T.MVAL])
+    names = ([T.MTRAIN[i%T.mtrain].name
+        for i in range(len(self.TrainStructures))] + [_.name for _ in T.MVAL])
     names = list(enumerate(names))
     names.sort(key = lambda x : x[1])
     values = self.Usage[[_[0] for _ in names],:]

@@ -8,7 +8,6 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 from custom_module import torch_NN
-from composition import Composer
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
 nn_device='cuda:0'
 torch.device(nn_device)
@@ -75,8 +74,8 @@ class InnerLoop():
 
   def forward_pass(self, in_, target, weights=None):
     ''' Run data through net, return loss and output '''
-    input_var = torch.autograd.Variable(in_).cuda(async=True)
-    target_var = torch.autograd.Variable(target).cuda(async=True)
+    input_var = torch.autograd.Variable(in_).cuda(non_blocking=True)
+    target_var = torch.autograd.Variable(target).cuda(non_blocking=True)
     # Run the batch through the net, compute loss
     out = self.net_forward(input_var, weights)
     loss = self.loss_fn(out, target_var)
