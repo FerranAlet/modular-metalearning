@@ -20,7 +20,7 @@ Finally, you should import your new file in [modular_main](https://github.com/Fe
 
 
 ## Example runs
-First you have to generate the datasets using  [create_functions_datasets](https://github.com/FerranAlet/modular-metalearning/blob/master/create_functions_dataset.py). For instance to create the functions dataset:
+First you have to generate the datasets using  [create_functions_datasets](https://github.com/FerranAlet/modular-metalearning/blob/master/create_functions_datasets.py). For instance to create the functions dataset:
 ```
 python create_functions_datasets.py --mode sum --not_alone --out_file sums.hdf5
 ```

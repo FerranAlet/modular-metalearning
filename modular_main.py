@@ -4,6 +4,7 @@ from tensorboardX import SummaryWriter
 from modular_metalearning import BounceGrad
 
 from sum_composer import Sum_Structure
+from functioncomposition_composer import FunctionComposition_Structure
 
 def main():
   #########
@@ -123,10 +124,10 @@ def main():
     [composer, args.structure_size] = composer.split('-')
     args.structure_size=int(args.structure_size)
     S = Sum_Structure(args=args)
-  # elif composer.startswith('functionComposition'):
-  #   [composer, args.structure_size] = composer.split('-')
-  #   args.structure_size=int(args.structure_size)
-  #   S = FunctionComposition_Structure(args=args)
+  elif composer.startswith('functionComposition'):
+    [composer, args.structure_size] = composer.split('-')
+    args.structure_size=int(args.structure_size)
+    S = FunctionComposition_Structure(args=args)
   else: raise NotImplementedError
 
   bg = BounceGrad(S=S, args=args, tensorboardX_writer=tensorboardX_writer)
