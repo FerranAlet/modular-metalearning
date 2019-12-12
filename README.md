@@ -1,6 +1,6 @@
 # Modular meta-learning
 
-Code for the paper [Modular meta-learning](https://arxiv.org/abs/1806.10166)
+Code for the paper [Modular meta-learning](https://arxiv.org/abs/1806.10166) and [NRI with Fast Modular meta-learning](https://papers.nips.cc/paper/9353-neural-relational-inference-with-fast-modular-meta-learning) (code coming by the end of the month.)
 
 The code has been refactored to make it easy to extend with your own variations.
 
