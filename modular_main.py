@@ -35,7 +35,7 @@ def main():
   # BounceGrad flags
   parser.add_argument('--torch_seed', dest='torch_seed', type=int,
           default=0, help='random seed for pytorch')
-  parser.add_argument('--rain_copies', dest='mtrain_copies', type=int,
+  parser.add_argument('--mtrain_copies', dest='mtrain_copies', type=int,
           default=1, help='number of copies of meta-train, searching multiple \
                   structures in parallel')
   parser.add_argument('--dont_bounce', dest='do_bounce', action='store_false',
@@ -89,34 +89,16 @@ def main():
   parser.add_argument('--initial_acc', dest='initial_acc', type=float,
       default = 0, help='[log] initial acceptance ratio')
 
-  # Flags about GENs
-  parser.add_argument('--GEN_sqrt_num_nodes', dest='GEN_sqrt_num_nodes',
-      type=int, default=5, help='n to create a grid of nxn')
-  parser.add_argument('--GEN_node_dim', dest='GEN_node_dim',
-      type=int, default=32, help='GCN node dimension')
-  parser.add_argument('--GEN_msg_sz', dest='GEN_msg_sz',
-      type=int, default=16, help='GCN message size')
-  parser.add_argument('--GEN_msg_pass_steps', dest='GEN_msg_pass_steps',
-      type=int, default=-1, help='# of GCN msg pass steps, \
-          -1 -> equal to 2*GEN_sqrt_num_nodes (diameter)')
-  parser.add_argument('--GEN_optimize_nodes', dest='GEN_optimize_nodes',
-      action='store_true', help='optimize node positions in GEN')
-  parser.add_argument('--GEN_repr_fn', dest='GEN_repr_fn', type=str,
-      default='', help='GEN representation function')
-  parser.add_argument('--GEN_repeat_inp', dest='GEN_repeat_inp',
-      type=int, default=16, help='GEN repeating input')
-
   # Parsing args
   args = parser.parse_args()
 
   # Tensorboard writer
   tensorboardX_writer = SummaryWriter(
-      comment='nodes='+str(args.GEN_sqrt_num_nodes)+'_'+
-      'repr='+str(args.GEN_repr_fn)+'_'+
-      'opt_nodes='+str(args.GEN_optimize_nodes)+'_'+
-      'copies='+str(args.mtrain_copies)+'_'+
-      'data='+args.data_desc.split('/')[-1].split('.')[0]+'_'+
-      'angleedge=False_lr='+str(args.meta_lr))
+      comment='composer='+args.composer+
+      '_optsteps='+str(args.optimization_steps)+
+      '_copies='+str(args.mtrain_copies)+
+      '_data='+args.data_desc.split('/')[-1].split('.')[0]+'_'+
+      str(args.meta_lr))
 
   # Finding composer
   composer = args.composer

@@ -5,7 +5,6 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-import seaborn as sns
 import time
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -56,7 +55,6 @@ class BounceGrad(object):
     self.split_by_file = args.split_by_file
     self.limit_data = args.limit_data
     self.max_datasets = args.max_datasets
-    self.PALETTE = sns.hls_palette(12, l=.3, s=.8)
     self.data_split = [x/100 for x in map(int, args.data_split.split(','))]
     self.meta_split = [x/100 for x in map(int, args.meta_split.split(','))]
 
@@ -129,6 +127,7 @@ class BounceGrad(object):
     self.plot_name += '_steps=' + str(self.optimization_steps)
     self.plot_name += '_lr=' + str(self.meta_lr)
     self.plot_name += '_Mupdt=' + str(self.MAML_inner_updates)
+    self.plot_name += '_copies='+str(self.mtrain_copies)
     print('plot_name: ', self.plot_name)
     if args.plot_name.startswith('overwrite-'):
       self.plot_name = '-'.join(args.plot_name.split('-')[1:])
@@ -150,7 +149,6 @@ class BounceGrad(object):
     Creates modules following num_modules and type_modules
     '''
     self.L = nn.ModuleList() #Library of PyTorch Modules
-    self.ModuleColors = []
     self.S.Modules = []
     self.nn_inp = []
     self.nn_out = []
@@ -174,7 +172,6 @@ class BounceGrad(object):
           hidden=self.nn_hid[t],
           final_act=self.nn_act[t]).to(device=self.nn_device)
         l.append(len(self.L))
-        self.ModuleColors.append(len(self.ModuleColors)%len(self.PALETTE))
         self.L.append(aux_nn)
       self.S.Modules.append(l)
     if self.load_modules != '': self.load_L(self.load_modules)
