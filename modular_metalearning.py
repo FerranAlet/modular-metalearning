@@ -178,7 +178,7 @@ class BounceGrad(object):
     self.SOpt = torch.optim.Adam(self.L.parameters(), lr=self.meta_lr)
     self.SOpt_scheduler = ReduceLROnPlateau(
         optimizer=self.SOpt, factor=1/2.,
-        mode='min', patience=20, threshold=0, cooldown=100, verbose=True,
+        mode='min', patience=50, threshold=0, cooldown=300, verbose=True,
         min_lr=1e-4)
     self.LocalOpt =None #optimizes custom parameters --> uses Train, not Val
     self.initial_norms = [torch.norm(_) for m in self.L for _ in m.parameters()]
