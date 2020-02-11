@@ -1,6 +1,6 @@
 # Modular meta-learning
 
-Code for the paper [Modular meta-learning](https://arxiv.org/abs/1806.10166) and [NRI with Fast Modular meta-learning](https://papers.nips.cc/paper/9353-neural-relational-inference-with-fast-modular-meta-learning) (code coming by the end of the month.)
+Code for the papers [Modular meta-learning](https://arxiv.org/abs/1806.10166) and [NRI with Fast Modular meta-learning](https://papers.nips.cc/paper/9353-neural-relational-inference-with-fast-modular-meta-learning) (in the [neurips_2019 folder](https://github.com/FerranAlet/modular-metalearning/tree/master/neurips2019))
 
 The code has been refactored to make it easy to extend with your own variations.
 
@@ -64,14 +64,27 @@ Beware that adding modules makes the use of each module less frequent, and there
 * [Learning Quickly to Plan Quickly Using Modular Meta-Learning](https://arxiv.org/abs/1809.07878) Chitnis et al.
 * [Modular meta-learning in Abstract Graph Networks for combinatorial generalization](https://arxiv.org/pdf/1812.07768.pdf); Alet et al. ; NeurIPS meta-learning workshop 2018
 
+## If you find this code useful in your research, please consider citing
+```
+@inproceedings{alet2018modular,
+    author={Ferran Alet, Tomas Lozano-Perez, Leslie Pack Kaelbling},
+    title={Modular meta-learning},
+    booktitle={Conference on Robot Learning (CoRL)},
+    year={2018},
+    url={http://lis.csail.mit.edu/pubs/alet-corl18.pdf}
+}
+@incollection{NIPS2019_9353,
+title = {Neural Relational Inference with Fast Modular Meta-learning},
+author = {Alet, Ferran and Weng, Erica and Lozano-P\'{e}rez, Tom\'{a}s and Kaelbling, Leslie Pack},
+booktitle = {Advances in Neural Information Processing Systems 32},
+editor = {H. Wallach and H. Larochelle and A. Beygelzimer and F. d\textquotesingle Alch\'{e}-Buc and E. Fox and R. Garnett},
+pages = {11804--11815},
+year = {2019},
+publisher = {Curran Associates, Inc.},
+url = {http://papers.nips.cc/paper/9353-neural-relational-inference-with-fast-modular-meta-learning.pdf}
+}
+```
+
+
 ## Questions? Suggestions?
 Please email me at alet(at)mit(dot)edu.
-
-## TODO
-From the original paper:
-* Add cleaned up version of backboneConcat composition
-* Add cleaned up version of attention composition
-
-From following work:
-* Add Graph Neural Network composition
-* Add support for CNNs
