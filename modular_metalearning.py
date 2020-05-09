@@ -216,7 +216,6 @@ class BounceGrad(object):
           smaller_MVals=self.smaller_MVals,
           normalize=self.normalize_data)
     else: assert False, self.data_source + ' hasnt been implemented yet'
-    import pdb; pdb.set_trace()
     self.D_mtrain = len(self.D.MTRAIN)
     self.D_mval = len(self.D.MVAL)
     self.D_mtest = len(self.D.MTEST)
