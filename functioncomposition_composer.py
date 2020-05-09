@@ -18,8 +18,8 @@ class FunctionComposition_Composer(Composer):
         structure=structure, instructions=instructions)
 
   def forward_no_weights(self, x):
-    for mod in self.module_list:
-      x = mod(x)
+    for mod in self.structure['modules']:
+      x = self.module_list[mod](x)
     return x
 
   def forward_with_weights(self, x, weights):
