@@ -5,8 +5,12 @@ from __future__ import print_function
 import torch
 from composition import Composer
 from structure import Structure
-torch.set_default_tensor_type('torch.cuda.FloatTensor')
-nn_device='cuda:0'
+if torch.cuda.is_available():
+  torch.set_default_tensor_type('torch.cuda.FloatTensor')
+  nn_device='cuda:0'
+else:
+  torch.set_default_tensor_type('torch.FloatTensor')
+  nn_device="cpu"
 torch.device(nn_device)
 
 class Sum_Composer(Composer):

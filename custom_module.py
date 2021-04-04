@@ -7,8 +7,12 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 from layers import linear, relu, exponential
-torch.set_default_tensor_type('torch.cuda.FloatTensor')
-nn_device='cuda:0'
+if torch.cuda.is_available():
+  torch.set_default_tensor_type('torch.cuda.FloatTensor')
+  nn_device='cuda:0'
+else:
+  torch.set_default_tensor_type('torch.FloatTensor')
+  nn_device="cpu"
 torch.device(nn_device)
 
 

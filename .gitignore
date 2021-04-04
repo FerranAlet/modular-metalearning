@@ -109,3 +109,8 @@ ENV/
 # HDF5 files
 
 *.hdf5
+
+# repo specific result folders
+
+runs/*
+BounceGrad__*
